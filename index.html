@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" id="tc" content="#0b6e7f">
+<title>Shop</title>
+<link rel="icon" id="fav" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; background: #0b6e7f; overflow: hidden; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #f3f7f7; }
+  #wait {
+    position: fixed; inset: 0; display: grid; place-items: center; z-index: 2; text-align: center;
+    font: 600 18px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #fff; padding: 20px;
+    transition: opacity .3s;
+  }
+  #wait.gone { opacity: 0; pointer-events: none; }
+  .dot { display: inline-block; width: 10px; height: 10px; margin: 0 4px; border-radius: 50%;
+         background: #fff; animation: b 1s infinite alternate; }
+  .dot:nth-child(2) { animation-delay: .2s; } .dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes b { to { opacity: .2; } }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div id="wait"><div><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<iframe id="app" title="Shop" allow="clipboard-write"></iframe>
+<script>
+  /* ADLINKCARD · shop wrapper (hides the Google banner).
+     Nothing to edit here: everything comes from config.js */
+  var C = window.CONFIG || {};
+  var color = /^#[0-9a-f]{6}$/i.test(C.COLOR || "") ? C.COLOR : "#0b6e7f";
+  document.title = C.TITLE || "Shop";
+  document.body.style.background = color;
+  document.getElementById("tc").setAttribute("content", color);
+  document.getElementById("fav").href = "data:image/svg+xml," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>" +
+    (C.ICON || "🛒") + "</text></svg>");
+
+  var f = document.getElementById("app"), w = document.getElementById("wait");
+  if (!/\/exec$/.test(C.SHOP_LINK || "") || !C.SHOP_CODE) {
+    w.textContent = "This shop is not set up yet (config.js).";
+  } else {
+    // ?staff=1, ?inv=ORD-0005&k=... are passed on; the shop code is always added
+    var q = new URLSearchParams(location.search);
+    q.set("shop", C.SHOP_CODE);
+    f.src = C.SHOP_LINK + "?" + q.toString();
+    f.onload = function () { w.className = "gone"; };
+  }
+</script>
+</body>
+</html>
